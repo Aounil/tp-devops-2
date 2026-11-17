@@ -21,6 +21,6 @@ class HelloControllerTest {
     void helloReturnsGreeting() throws Exception {
         mockMvc.perform(get("/hello"))
                .andExpect(status().isOk())                    // HTTP 200
-               .andExpect(content().string("Hello DevOps!")); // exact body
+               .andExpect(content().string("Greetings, DevOps!"));
     }
 }
