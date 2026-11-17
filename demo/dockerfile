@@ -1,0 +1,30 @@
+# Full Maven + JDK 17 image, only used to compile; it is NOT shipped.
+FROM maven:3.9-eclipse-temurin-17 AS build
+WORKDIR /app
+
+# Copy pom.xml first so the dependency download layer is cached
+# and only re-run when pom.xml changes.
+COPY pom.xml .
+RUN mvn -q dependency:go-offline
+
+COPY src ./src
+RUN mvn -q clean package -DskipTests
+
+# JRE only: much smaller than the JDK + Maven image.
+FROM eclipse-temurin:17-jre
+WORKDIR /app
+
+# Dedicated non-root system user and group.
+RUN groupadd --system app && useradd --system --gid app --no-create-home app
+
+# Copy ONLY the jar from the build stage.
+COPY --from=build /app/target/demo-0.0.1-SNAPSHOT.jar app.jar
+
+# From here on, everything runs as "app", not root.
+USER app
+
+# Documentation only: the port still has to be published with -p.
+EXPOSE 8080
+
+# Exec form (JSON array) so java is PID 1 and receives stop signals.
+ENTRYPOINT ["java", "-jar", "app.jar"]

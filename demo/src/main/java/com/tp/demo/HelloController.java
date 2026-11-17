@@ -11,8 +11,6 @@ public class HelloController {
     // Maps HTTP GET /hello to this method.
     @GetMapping("/hello")
     public String hello() {
-        return "Greetings, DevOps!";
+        return "Hello DevOps!";
     }
-    @GetMapping("/version")
-    public String version() { return "1.0.0"; }
 }
